@@ -1,0 +1,39 @@
+# A 5-server Raft cluster, one container per server, each with its own disk.
+#
+#   docker compose up --build
+#   curl -X POST localhost:7001/submit -H "content-type: application/json" -d '{"command":"set x=1"}'
+#   curl localhost:7001/status
+#   docker compose kill s1        # crash a server, then watch the others elect a new leader
+#   docker compose start s1       # it reloads its log from its volume and catches up
+x-raft: &raft
+  build: .
+  restart: "no"
+
+services:
+  s1:
+    <<: *raft
+    environment: { NODE_ID: "1", PEERS: "2=http://s2:7000,3=http://s3:7000,4=http://s4:7000,5=http://s5:7000" }
+    ports: ["7001:7000"]
+    volumes: ["s1:/data"]
+  s2:
+    <<: *raft
+    environment: { NODE_ID: "2", PEERS: "1=http://s1:7000,3=http://s3:7000,4=http://s4:7000,5=http://s5:7000" }
+    ports: ["7002:7000"]
+    volumes: ["s2:/data"]
+  s3:
+    <<: *raft
+    environment: { NODE_ID: "3", PEERS: "1=http://s1:7000,2=http://s2:7000,4=http://s4:7000,5=http://s5:7000" }
+    ports: ["7003:7000"]
+    volumes: ["s3:/data"]
+  s4:
+    <<: *raft
+    environment: { NODE_ID: "4", PEERS: "1=http://s1:7000,2=http://s2:7000,3=http://s3:7000,5=http://s5:7000" }
+    ports: ["7004:7000"]
+    volumes: ["s4:/data"]
+  s5:
+    <<: *raft
+    environment: { NODE_ID: "5", PEERS: "1=http://s1:7000,2=http://s2:7000,3=http://s3:7000,4=http://s4:7000" }
+    ports: ["7005:7000"]
+    volumes: ["s5:/data"]
+
+volumes: { s1: {}, s2: {}, s3: {}, s4: {}, s5: {} }

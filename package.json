@@ -1,0 +1,19 @@
+{
+  "name": "quorum",
+  "version": "1.0.0",
+  "description": "Raft consensus, built from scratch: a deterministic simulator, a chaos-testing harness, and an interactive visualizer",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc -p .",
+    "test": "tsc -p . && node --test \"build/test/**/*.test.js\"",
+    "chaos": "tsc -p . && node build/cli/chaos.js",
+    "site": "node scripts/build-site.mjs",
+    "cluster": "tsc -p . && node build/server/cluster.js"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "esbuild": "^0.24.2",
+    "typescript": "^5.9.0"
+  }
+}

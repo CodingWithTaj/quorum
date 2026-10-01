@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Quorum: five servers that can't be made to disagree</title>
+<meta name="description" content="An interactive, chaos-tested implementation of the Raft consensus algorithm. Crash servers, split the network, and watch five servers keep identical data anyway.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2240%22 fill=%22%233DD6B5%22/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<!--STYLE-->
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="dot"></span>quorum</div>
+  <nav class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-tab="explore">Explore</button>
+    <button role="tab" aria-selected="false" data-tab="break">Break it</button>
+  </nav>
+  <span class="tagline">Raft consensus, built from scratch and chaos-tested</span>
+  <a class="gh" href="https://github.com/CodingWithTaj/quorum">Source on GitHub</a>
+</header>
+
+<!-- ================================================================ explore -->
+<main id="explore" class="page">
+  <aside class="guide" id="guide" aria-live="polite"></aside>
+
+  <section class="world">
+    <div class="status" id="status" aria-live="polite">
+      <p class="headline" id="headline">Starting five servers…</p>
+      <p class="detail" id="detail"></p>
+    </div>
+
+    <div class="picture">
+      <figure class="ring-wrap">
+        <figcaption>The servers <span>talking to each other</span></figcaption>
+        <svg id="stage" viewBox="0 0 640 600" role="img" aria-label="Five servers exchanging messages"></svg>
+        <div class="legend">
+          <span><i class="lg follower"></i>Follower</span>
+          <span><i class="lg candidate"></i>Candidate</span>
+          <span><i class="lg leader"></i>Leader</span>
+          <span><i class="lg down"></i>Crashed</span>
+          <span><i class="cutline"></i>Cut link</span>
+        </div>
+      </figure>
+      <figure class="logs-wrap">
+        <figcaption>Their data <span>each row is one server's copy of the log</span></figcaption>
+        <div id="logs"></div>
+        <div class="logs-key">
+          <span><i class="k solid"></i>Committed: on a majority, permanent</span>
+          <span><i class="k open"></i>Not yet committed: can still be erased</span>
+        </div>
+      </figure>
+    </div>
+
+    <div class="transport">
+      <button class="btn icon" id="play" aria-label="Pause">❚❚</button>
+      <label class="speed">Speed
+        <select id="speed">
+          <option value="0.25">¼×</option><option value="0.5">½×</option><option value="1" selected>1×</option>
+          <option value="2">2×</option><option value="4">4×</option>
+        </select>
+      </label>
+      <input type="range" id="timeline" min="0" max="0" value="0" step="1" aria-label="Timeline: drag to rewind">
+      <span class="clock" id="clock">0.000 s</span>
+    </div>
+
+    <details class="events">
+      <summary>Event log</summary>
+      <ol id="feed"></ol>
+    </details>
+  </section>
+</main>
+
+<!-- ================================================================ break it -->
+<main id="break" class="page" hidden>
+  <section class="break">
+    <div class="break-intro">
+      <h1>We tried to break it, 10,000 times.</h1>
+      <p>Clicking around shows Raft working. It doesn't prove it. So the same code runs inside a deterministic simulator that throws randomized disasters at it: servers crashing and bouncing back within milliseconds, the network splitting and healing, messages lost, duplicated and reordered, all while clients keep writing.</p>
+      <p>After <em>every single event</em>, a checker verifies the four safety guarantees from the Raft paper. Across 10,000 scenarios, 35 hours of simulated time and 23 million messages, none has ever been violated.</p>
+      <p>A checker that never fails could just be broken itself. So below you can switch on one of four classic Raft bugs, and watch it get caught and replayed.</p>
+    </div>
+
+    <div class="break-grid">
+      <div class="card">
+        <h2>Run the chaos test</h2>
+        <fieldset class="bugs">
+          <legend>Which code should it test?</legend>
+          <label><input type="radio" name="bug" value="" checked><span><strong>The real implementation</strong><br><small>Expect: no violations</small></span></label>
+          <div id="bugList"></div>
+        </fieldset>
+        <div class="form">
+          <label>Scenarios <input type="number" id="runs" value="1000" min="1" max="100000"></label>
+          <label>Starting seed <input type="number" id="firstSeed" value="1" min="1"></label>
+        </div>
+        <button class="btn primary big" id="runChaos">Run</button>
+        <div class="progress"><div id="bar"></div></div>
+        <div id="results"></div>
+      </div>
+      <div class="card">
+        <h2>The four guarantees</h2>
+        <p class="hint">If any of these is ever false, the servers can disagree and data can be lost.</p>
+        <dl id="props"></dl>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!--SCRIPT-->
+</body>
+</html>

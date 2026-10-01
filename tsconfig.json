@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "outDir": "build",
+    "rootDir": ".",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noImplicitReturns": true,
+    "declaration": false,
+    "sourceMap": false,
+    "skipLibCheck": true,
+    "lib": ["ES2022", "DOM"]
+  },
+  "include": ["src", "test", "cli", "server", "web"]
+}
